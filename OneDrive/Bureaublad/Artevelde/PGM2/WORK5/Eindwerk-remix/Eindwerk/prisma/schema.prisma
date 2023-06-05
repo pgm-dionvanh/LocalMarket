@@ -1,0 +1,56 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shops Shops[]
+  password Password?
+}
+
+// Save password outside user model
+model Password {
+  hash String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+}
+
+model Shops {
+  id   String @id @default(cuid())
+  name  String
+  owner User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+  products Products[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Products {
+  id   String @id @default(cuid())
+  name  String
+  shop Shops  @relation(fields: [shopId], references: [id])
+  shopId String
+  reviews Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id   String @id @default(cuid())
+  text String
+  rating Int
+  product Products @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
