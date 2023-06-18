@@ -1,38 +1,50 @@
 import type { V2_MetaFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import HomeSideBar from "./../components/ui/sidebar/HomeSideBar"
 
-import { useOptionalUser } from "~/utils";
+import { Carousel } from 'flowbite-react';
 
-export const meta: V2_MetaFunction = () => [{ title: "Pgm - test" }];
+export const meta: V2_MetaFunction = () => [{ title: "Local Market ~ Home" }];
 
 export default function Index() {
-  const user = useOptionalUser();
   return (
-    <main className="relative min-h-screen bg-gray-50 sm:flex sm:items-center sm:justify-center">
-                {user ? (
-                  <Link
-                    to="/"
-                    className="flex items-center justify-center rounded-md border border-transparent bg-blue-500 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-blue-500 sm:px-8"
-                  >
-                    Welcome { user.email }
-                  </Link>
-                ) : (
-                  <div className="space-y-4 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5 sm:space-y-0">
-                    <Link
-                      to="/join"
-                      className="flex items-center justify-center rounded-md border border-transparent bg-blue-500 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-blue-500 sm:px-8"
-                    >
-                      Sign up
-                    </Link>
-                    <Link
-                      to="/login"
-                      className="flex items-center justify-center rounded-md bg-blue-500 px-4 py-3 font-medium text-white hover:bg-blue-600"
-                    >
-                      Log In
-                    </Link>
-                  </div>
-                )}
-
-    </main>
+    <>
+      <HomeSideBar/>
+      <main className="px-4 md:px-24">
+        <section id="search">
+            <div className="p-4 w-full">
+                <input type="text" className="w-full rounded-md" placeholder="Postcode" name="" id="" />
+            </div>
+        </section>
+        <section className="p-4 h-[20rem]">
+          <Carousel>
+            <img
+              alt="..."
+              src="https://flowbite.com/docs/images/carousel/carousel-1.svg"
+            />
+            <img
+              alt="..."
+              src="https://flowbite.com/docs/images/carousel/carousel-2.svg"
+            />
+            <img
+              alt="..."
+              src="https://flowbite.com/docs/images/carousel/carousel-3.svg"
+            />
+            <img
+              alt="..."
+              src="https://flowbite.com/docs/images/carousel/carousel-4.svg"
+            />
+            <img
+              alt="..."
+              src="https://flowbite.com/docs/images/carousel/carousel-5.svg"
+            />
+          </Carousel>
+        </section>
+        <section>
+          <div className="p-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+            <span>cards</span>
+          </div>
+        </section>
+      </main>
+    </>
   );
 }
