@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useLocation } from '@remix-run/react';
+import { X } from 'react-feather';
 
 export function CartTray({
   open,
@@ -57,7 +58,8 @@ export function CartTray({
                           className="-m-2 p-2 text-gray-400 hover:text-gray-500"
                           onClick={() => onClose(false)}
                         >
-                          <span>Close panel</span>
+                          <span className='sr-only'>Close panel</span>
+                          <X/>
                         </button>
                       </div>
                     </div>
