@@ -32,7 +32,7 @@ export default function SideBarHome() {
 					>
 						<ul className="flex flex-col items-center gap-4 lg:flex-row list-none lg:ml-auto">
 						<li className="nav-item">
-							<Dropdown label={<User/>}>
+							<Dropdown inline label={<User/>}>
 								{ user?.email ? 
 									<>
 										<Dropdown.Item>
@@ -49,14 +49,14 @@ export default function SideBarHome() {
 										<Link to="/login">Login</Link>
 									</Dropdown.Item>
 									<Dropdown.Item>
-										<Link to="/join">Sign up</Link>
+										<Link to="/signup">Sign up</Link>
 									</Dropdown.Item>
 								</>
 								}
 							</Dropdown>
 						</li>
 						<li>
-							<ShoppingCart onClick={() => setCardOpen(true)}/>
+							<ShoppingCart className="cursor-pointer" onClick={() => setCardOpen(true)}/>
 						</li>
 					</ul>
 				</div>
