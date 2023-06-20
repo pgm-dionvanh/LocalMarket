@@ -12,6 +12,7 @@ import {
 
 import { getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
+import { CartProvider, useCart } from "react-use-cart";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -32,10 +33,12 @@ export default function App() {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
+        <CartProvider>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        </CartProvider>
       </body>
     </html>
   );

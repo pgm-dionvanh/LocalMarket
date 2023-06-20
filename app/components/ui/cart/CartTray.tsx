@@ -4,11 +4,12 @@ import { useLocation } from '@remix-run/react';
 import {Link} from "@remix-run/react"
 import { X } from 'react-feather';
 import { useOptionalUser } from '~/utils';
+import { useCart } from "react-use-cart";
+
 export function CartTray({
   open,
   onClose,
   adjustOrderLine,
-  removeItem,
 }: {
   open: boolean;
   onClose: (closed: boolean) => void;
@@ -16,11 +17,14 @@ export function CartTray({
   removeItem?: (lineId: string) => void;
 }) {  
   const user = useOptionalUser();
-  const [state, setState] = useState<any>();
 
-  useEffect(() => {
-    setState(localStorage.getItem('cartItems'));
-  }, [state]);
+  const {
+    isEmpty,
+    totalUniqueItems,
+    items,
+    updateItemQuantity,
+    removeItem,
+  } = useCart();
 
 
   return (
@@ -58,7 +62,7 @@ export function CartTray({
                   <div className="flex-1 py-6 overflow-y-auto px-4 sm:px-6">
                     <div className="flex items-start justify-between">
                       <Dialog.Title className="text-lg font-medium text-gray-900">
-                        Shopping cart
+                        Shopping cart ({totalUniqueItems})
                       </Dialog.Title>
                       <div className="ml-3 h-7 flex items-center">
                         <button
@@ -74,13 +78,13 @@ export function CartTray({
 
                     <div className="mt-8">
                         <div className="flex items-center justify-center h-48 text-xl text-gray-400">
-                          { state?.length > 0 ? 
-                            <ul role="list" className="-my-6 divide-y divide-gray-200">
+                        {items.map((item) => (
+                            <ul key={item.id} role="list" className="-my-6 divide-y divide-gray-200">
                                 <li  className="py-6 flex">
                                   <div className="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
                                     <img
-                                      src={state.itemImage}
-                                      alt={state.itemName}
+                                      src={item.image}
+                                      alt={item.name}
                                       className="w-full h-full object-center object-cover"
                                     />
                                   </div>
@@ -89,7 +93,7 @@ export function CartTray({
                                     <div>
                                       <div className="flex justify-between text-base font-medium text-gray-900">
                                         <h3>
-                                          <Link to={`/products/`}>
+                                          <Link onClick={() => open = false} to={`/product/${item.id}`}>
                                             test
                                           </Link>
                                         </h3>
@@ -101,9 +105,7 @@ export function CartTray({
                                   </div>
                                 </li>
                             </ul>
-                            :
-                            "Your cart is empty"
-                          }
+                          ))}
                         </div>
                     </div>
                     <div className='w-full flex justify-center items-center'>
