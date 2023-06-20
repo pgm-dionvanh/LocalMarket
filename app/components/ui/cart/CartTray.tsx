@@ -19,7 +19,7 @@ export function CartTray({
   const [state, setState] = useState<any>();
 
   useEffect(() => {
-    setState(user ? [] : localStorage.getItem('cartItems'));
+    setState(localStorage.getItem('cartItems'));
   }, [state]);
 
   return (

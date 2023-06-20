@@ -56,7 +56,7 @@ export const action = async ({ request }: ActionArgs) => {
   
     return createUserSession({
       redirectTo,
-      remember: remember === "on" ? true : false,
+      remember: false,
       request,
       userId: user.id,
     });
