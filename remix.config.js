@@ -13,4 +13,9 @@ module.exports = {
   postcss: true,
   serverModuleFormat: "cjs",
   tailwind: true,
+  server:
+  process.env.NETLIFY || process.env.NETLIFY_LOCAL
+    ? "./server.ts"
+    : undefined,
+serverBuildPath: ".netlify/functions-internal/server.js",
 };
