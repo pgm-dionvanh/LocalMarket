@@ -5,6 +5,7 @@ import {
     unstable_composeUploadHandlers as composeUploadHandlers,
     unstable_createMemoryUploadHandler as createMemoryUploadHandler,
     unstable_parseMultipartFormData as parseMultipartFormData,
+redirect,
 } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { useUser } from "~/utils";
@@ -24,7 +25,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 
 export const action: ActionFunction = async ({ request }) => {
-   
     const uploadHandler = composeUploadHandlers(
         async ({ name, data }) => {
             if (name !== "upload") {
@@ -39,7 +39,7 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await parseMultipartFormData(request, uploadHandler);
     const file = formData.get('upload')
 
-    createShop({
+    const shop = await createShop({
             name: formData.get('name'),
             description: formData.get('description'),
             postcode: formData.get('postcode'),
@@ -47,9 +47,10 @@ export const action: ActionFunction = async ({ request }) => {
             ownerId: await getUserId(request)
         
     })
-    return {};
-  };
-  
+    
+    return redirect(`/shop/${shop.id}`);
+};
+
 
 export default function Index() {
     const user = useUser();
@@ -119,3 +120,6 @@ export default function Index() {
         </>
     );
 }
+
+
+export const unstable_shouldReload = () => true;

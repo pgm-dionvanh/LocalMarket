@@ -1,11 +1,10 @@
-import { ActionFunction, json, type LoaderArgs, type V2_MetaFunction } from "@remix-run/node";
+import { ActionFunction, json, redirect, type LoaderArgs, type V2_MetaFunction } from "@remix-run/node";
 import { createProduct, getProductsByShopId } from "~/models/products.server";
 import { useUser } from "~/utils";
 import { requireUserId } from "~/session.server"
 
-import ShopAdminCard from "~/components/ui/cards/AdminShopCard";
 import { Form, useLoaderData, useParams } from "@remix-run/react";
-import { AdminNav, HomeSideBar } from "~/components/ui";
+import { AdminNav, HomeSideBar, AdminItemCard } from "~/components/ui";
 import { getShopById } from "~/models/shops.server";
 import { 
     unstable_composeUploadHandlers as composeUploadHandlers,
@@ -13,6 +12,7 @@ import {
     unstable_parseMultipartFormData as parseMultipartFormData,
 } from "@remix-run/node";
 import { uploadImage } from "~/utils/cloudinary";
+import { Products } from "@prisma/client";
 
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Dashboard` }];
 
@@ -46,7 +46,7 @@ export const action: ActionFunction = async ({ request }) => {
             shopId: formData.get('shopid')
         
     })
-    return {};
+    return redirect(`/shop/${formData.get('shopid')}`);
 };
 
 export default function Index() {
@@ -86,7 +86,7 @@ export default function Index() {
                                                 <label htmlFor="upload" className="flex flex-col items-center justify-center border-4 border-gray-300 border-dashed rounded h-36 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300 cursor-pointer">
                                                     <svg className="w-8 h-8 text-gray-600
                                                     " xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                                                    <span className="mt-2 text-base leading-normal text-blue-500 font-bold">Selecteer een logo</span>
+                                                    <span className="mt-2 text-base leading-normal text-blue-500 font-bold">Selecteer afbeelding</span>
                                                     <input type="file" name="upload" id="upload" className="hidden"/>
                                                 </label>
                                                 <p className="py-2 text-gray-400">Tip: alleen .png of .jpg </p>
@@ -98,6 +98,24 @@ export default function Index() {
                             </div>
                         </div>
                     </div>
+            </section>
+            <section>
+            <h2 className="text-center sm:text-left font-bold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-black">Products</h2>
+
+            <div className="p-4">
+            { products.length === 0 && (
+                    <div className="flex justify-center items-center w-full p-24">
+                        <span className="text-gray-500 text-lg m-auto">No products found</span>
+                    </div>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4 w-full">
+        
+
+                    { products && products.map((product: Products) => {return (
+                        <AdminItemCard key={product.id} product={product} />
+                    )})}
+                </div>
+            </div>
             </section>
             </main>
         </>
