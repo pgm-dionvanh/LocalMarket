@@ -2,8 +2,12 @@ import type { Shops } from "@prisma/client";
 import { prisma } from "~/db.server";
 
 
-export async function getShopById(id: Shops["id"]) {
+export async function getShopById(id: Shops["id"]): Promise<Shops[]> {
   return prisma.shops.findUnique({ where: { id } });
+}
+
+export async function getShopByPostCode(postcode: Shops["postcode"]) {
+  return prisma.shops.findMany({ where: { postcode } });
 }
 
 export async function getAllShops(): Promise<Shops[]> {

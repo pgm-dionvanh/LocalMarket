@@ -33,7 +33,7 @@ export default function Index() {
                   <Search className="absolute top-0 bottom-0 w-6 h-6 my-auto text-gray-400 left-3"/>
                   <input
                       type="text"
-                      placeholder="Search"
+                      placeholder="Postcode"
                       className="w-full py-3 pl-12 pr-4 text-gray-500 border rounded-md outline-none bg-gray-50 focus:bg-white focus:border-indigo-600"
                       onKeyPress={(e) => {
                         if(e.key === 'Enter') {

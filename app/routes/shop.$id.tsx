@@ -17,7 +17,6 @@ export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Search` }];
 
 export default function Index() {
     const data: Shop = useLoaderData();
-    console.log(data)
 
     if(!data) return <div>Shop not found</div>
   return (

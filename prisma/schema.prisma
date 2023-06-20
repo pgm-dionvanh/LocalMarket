@@ -32,6 +32,7 @@ model Shops {
   name  String
   description String @default("New shop")
   image String
+  postcode String
   owner User   @relation(fields: [ownerId], references: [id])
   ownerId String
   products Products[]

@@ -40,6 +40,7 @@ export const action: ActionFunction = async ({ request }) => {
     createShop({
             name: formData.get('name'),
             description: formData.get('description'),
+            postcode: formData.get('postcode'),
             image: file,
             ownerId: await getUserId(request)
         
@@ -74,7 +75,10 @@ export default function Index() {
                                                 <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="description">Shop description</label>
                                                 <input type="text" id="description" name="description" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
                                             </div>
-
+                                            <div className="mb-4 pt-0 flex flex-col">
+                                                <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="description">Shop postcode</label>
+                                                <input type="text" id="postcode" name="postcode" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
+                                            </div>
                                             <div className="pt-0 flex flex-col">
                                                 <label className="mb-4 text-gray-600 text-lg font-light" htmlFor="upload">Logo</label>
                                                 <label htmlFor="upload" className="flex flex-col items-center justify-center border-4 border-gray-300 border-dashed rounded h-36 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300 cursor-pointer">
