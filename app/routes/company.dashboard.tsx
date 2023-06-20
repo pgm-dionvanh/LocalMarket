@@ -1,7 +1,8 @@
 import type { ActionFunction, V2_MetaFunction } from "@remix-run/node";
-import HomeSideBar from "./../components/ui/sidebar/HomeSideBar"
+import { HomeSideBar, AdminNav } from "~/components/ui";
 import { unstable_createFileUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
+import { useUser } from "~/utils";
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Dashboard` }];
 
 export const fileUploadHandler = unstable_createFileUploadHandler({
@@ -19,11 +20,13 @@ export const action: ActionFunction = async ({ request }) => {
   
 
 export default function Index() {
+    const user = useUser();
     const actionData = useActionData();
     console.log( actionData)
     return (
     <>
         <HomeSideBar/>
+        <AdminNav/>
             <main className="px-4 md:px-48 mt-12">
             <Form method="post" encType="multipart/form-data">
                 <input type="text" name="name" placeholder="Shopname" />
