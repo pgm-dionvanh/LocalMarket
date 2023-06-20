@@ -1,9 +1,9 @@
 import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import HomeSideBar from "./../components/ui/sidebar/HomeSideBar"
 import { useParams } from "@remix-run/react";
-import { getShopById } from "./../models/shops.server.ts";
+import { getShopById } from "~/models/shops.server";
+import { ItemCard } from "~/components/ui";
 import {  useLoaderData } from "@remix-run/react";
-import Shop from "./../interfaces/shop.interface.ts";
 
 export async function loader({ params }: LoaderArgs) {
     const shop = getShopById(params.id);
@@ -76,6 +76,9 @@ export default function Index() {
                         <div className="space-y-12">
                             <div className="space-y-6">
                                 <h2 className="text-center sm:text-left font-bold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-black">Products</h2>
+                            </div>
+                            <div className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4 w-full">
+                                <ItemCard/>
                             </div>
                         </div>
                     </div>

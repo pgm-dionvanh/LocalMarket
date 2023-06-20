@@ -7,7 +7,7 @@ import { X } from 'react-feather';
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
-
+import axios from "axios";
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
@@ -16,52 +16,49 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+  const resp = await axios.get(`https://controleerbtwnummer.eu/api/validate/${formData.get('vat')}.json`)
+  console.log(resp.data)
+  
 
-  if (!validateEmail(email)) {
+  if (!validateEmail(formData.get('email'))) {
     return json(
-      { errors: { email: "Email is invalid", password: null } },
+      { errors: { email: "Email is invalid", vat: null, password: null } },
       { status: 400 }
     );
   }
 
-  if (typeof password !== "string" || password.length === 0) {
+  if(resp.data.valid === false){
+    return json(
+      { errors: { vat: "Vat number is incorrect", email: null, password: null } },
+      { status: 400 }
+    );
+  }
+
+  if (typeof formData.get('password') !== "string" || formData.get('password')?.length === 0) {
     return json(
       { errors: { email: null, password: "Password is required" } },
       { status: 400 }
     );
   }
 
-  if (password.length < 8) {
+  if(formData.get('password')?.length < 8) {
     return json(
       { errors: { email: null, password: "Password is too short" } },
       { status: 400 }
     );
   }
 
-  const existingUser = await getUserByEmail(email);
-  if (existingUser) {
+  if(formData.get('password') !== formData.get('repeatPassword')){
     return json(
-      {
-        errors: {
-          email: "A user already exists with this email",
-          password: null,
-        },
-      },
+      { errors: { email: null, password: "Passwords do not match" } },
       { status: 400 }
     );
   }
 
-  const user = await createUser(email, password);
-
-  return createUserSession({
-    redirectTo,
-    remember: false,
-    request,
-    userId: user.id,
-  });
+  return json({
+      errors: { vat: null, password: null, email: null } /* set errors in response */
+    },
+  )
 };
 
 export const meta: V2_MetaFunction = () => [{ title: "Sign Up" }];
@@ -69,6 +66,8 @@ export const meta: V2_MetaFunction = () => [{ title: "Sign Up" }];
 export default function SignUpPage() {
     const [searchParams] = useSearchParams();
     const formErrors = useActionData();
+
+    console.log(formErrors)
     return (
     <>
     <HomeSideBar/>
@@ -85,6 +84,9 @@ export default function SignUpPage() {
                 >
                 login to your existing account
                 </Link>
+            </p>
+            <p className="mt-2 text-center text-sm text-red-600">
+              Only company's can create an account
             </p>
             </div>
 
@@ -111,9 +113,9 @@ export default function SignUpPage() {
                         autoComplete="email"
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     />
-                    {formErrors?.email && (
+                    {formErrors?.errors?.email && (
                         <div className="text-xs text-red-700">
-                        {formErrors.email}
+                        {formErrors.errors?.email}
                         </div>
                     )}
                     </div>
@@ -131,6 +133,7 @@ export default function SignUpPage() {
                         id="firstName"
                         name="firstName"
                         type="text"
+                        required
                         autoComplete="given-name"
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     />
@@ -150,6 +153,7 @@ export default function SignUpPage() {
                         name="lastName"
                         type="text"
                         autoComplete="family-name"
+                        required
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     />
                     </div>
@@ -170,9 +174,9 @@ export default function SignUpPage() {
                         autoComplete="current-password"
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     />
-                    {formErrors?.password && (
+                    {formErrors?.errors?.password && (
                         <div className="text-xs text-red-700">
-                        {formErrors.password}
+                        {formErrors.errors.password}
                         </div>
                     )}
                     </div>
@@ -192,30 +196,38 @@ export default function SignUpPage() {
                         autoComplete="current-password"
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     />
-                    {formErrors?.repeatPassword && (
+                    {formErrors?.errors?.repeatPassword && (
                         <div className="text-xs text-red-700">
                         {formErrors.repeatPassword}
                         </div>
                     )}
                     </div>
                 </div>
-                {formErrors?.form && (
-                    <div className="rounded-md bg-red-50 p-4">
-                    <div className="flex">
-                        <div className="flex-shrink-0">
-                        <X/>
+                <div>
+                    <label
+                    htmlFor="vat"
+                    className="block text-sm font-medium text-gray-700"
+                    >
+                      Vat number
+                    </label>
+                    <div className="mt-1">
+                    <input
+                        id="vat"
+                        name="vat"
+                        type="text"
+                        placeholder="BE0123456789"
+                        autoComplete="current-password"
+                        minLength={12}
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    />
+                    {formErrors?.errors.vat && (
+                        <div className="text-xs text-red-700">
+                        {formErrors.errors.vat}
                         </div>
-                        <div className="ml-3">
-                        <h3 className="text-sm font-medium text-red-800">
-                            We ran into a problem while creating your account!
-                        </h3>
-                        <p className="text-sm text-red-700 mt-2">
-                            {formErrors.form}
-                        </p>
-                        </div>
+                    )}
                     </div>
-                    </div>
-                )}
+                </div>
+
 
                 <div>
                     <button

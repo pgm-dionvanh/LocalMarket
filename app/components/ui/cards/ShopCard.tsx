@@ -3,7 +3,7 @@ import { Link } from "@remix-run/react";
 import Shop from "../../../interfaces/shop.interface.ts";
 export default function ShopCard({ shop }: Shop) {
     return (
-        <div className="relative p-4 w-full bg-white rounded-lg overflow-hidden shadow hover:shadow-md">
+        <div key={shop.id} className="relative p-4 w-full bg-white rounded-lg overflow-hidden shadow hover:shadow-md">
             <div>
             <div className="absolute top-0 right-0 mt-2 mr-2 p-4 z-20 flex justify-between">
             <div className="inline-flex items-center justify-center w-8 h-8 p-2 rounded-full bg-white shadow-sm">
@@ -22,7 +22,7 @@ export default function ShopCard({ shop }: Shop) {
                 { shop.name }
             </h2>
 
-            <p className="mt-2 text-gray-800 text-sm">Description</p>
+            <p className="mt-2 text-gray-800 text-sm">{ shop.description }</p>
             <Link to="/shop/1">
             <button  className="mt-4 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md w-full">
                 View shop
