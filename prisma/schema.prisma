@@ -43,6 +43,9 @@ model Shops {
 model Products {
   id   String @id @default(cuid())
   name  String
+  image String
+  description String
+  price String
   shop Shops  @relation(fields: [shopId], references: [id])
   shopId String
   reviews Review[]

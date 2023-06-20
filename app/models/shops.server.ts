@@ -10,6 +10,14 @@ export async function getShopByPostCode(postcode: Shops["postcode"]) {
   return prisma.shops.findMany({ where: { postcode } });
 }
 
+export async function getShopsByCustomerId(customerId: string): Promise<Shops[]> {
+  return prisma.shops.findMany({
+    where: {
+      ownerId: customerId,
+    }
+  })
+}
+
 export async function getAllShops(): Promise<Shops[]> {
 
   return prisma.shops.findMany();

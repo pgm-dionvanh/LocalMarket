@@ -1,30 +1,29 @@
-import type { ActionFunction, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
-import { HomeSideBar, AdminNav, ShopCard } from "~/components/ui";
+import { ActionFunction, json, type LoaderArgs, type V2_MetaFunction } from "@remix-run/node";
+import { createProduct, getProductsByShopId } from "~/models/products.server";
+import { useUser } from "~/utils";
+import { requireUserId } from "~/session.server"
+
+import ShopAdminCard from "~/components/ui/cards/AdminShopCard";
+import { Form, useLoaderData, useParams } from "@remix-run/react";
+import { AdminNav, HomeSideBar } from "~/components/ui";
+import { getShopById } from "~/models/shops.server";
 import { 
-    json,
     unstable_composeUploadHandlers as composeUploadHandlers,
     unstable_createMemoryUploadHandler as createMemoryUploadHandler,
     unstable_parseMultipartFormData as parseMultipartFormData,
 } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
-import { useUser } from "~/utils";
-import { getUserId, requireUserId } from "~/session.server"
-import { createShop, getAllShops, getShopsByCustomerId } from "~/models/shops.server";
 import { uploadImage } from "~/utils/cloudinary";
-import ShopAdminCard from "~/components/ui/cards/AdminShopCard";
 
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Dashboard` }];
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
     const userId = await requireUserId(request);
-    const shops = await getShopsByCustomerId(userId);
-    return json(shops);
+    const shop = await getShopById(params.id)
+    const products = await getProductsByShopId(params.id);
+    return { shop: shop, products: products };
 };
 
-
-
 export const action: ActionFunction = async ({ request }) => {
-   
     const uploadHandler = composeUploadHandlers(
         async ({ name, data }) => {
             if (name !== "upload") {
@@ -39,50 +38,49 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = await parseMultipartFormData(request, uploadHandler);
     const file = formData.get('upload')
 
-    createShop({
+    createProduct({
             name: formData.get('name'),
             description: formData.get('description'),
-            postcode: formData.get('postcode'),
+            price: formData.get('price'),
             image: file,
-            ownerId: await getUserId(request)
+            shopId: formData.get('shopid')
         
     })
     return {};
-  };
-  
+};
 
 export default function Index() {
     const user = useUser();
-    const actionData = useActionData();
-    const data = useLoaderData();
-    console.log(data)
-    console.log( actionData)
+    const { shop, products } = useLoaderData();
+
     return (
     <>
         <HomeSideBar/>
         <AdminNav/>
             <main className="px-4 md:px-48 mt-12">
-
             <section className="my-36">
                     <div className="container mx-auto px-2">
                         <div className="space-y-12">
                             <div className="space-y-6">
-                                <h2 className="border-b-2  p-4 text-center sm:text-left font-bold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-black">Create Shop</h2>
+                                <h2 className="border-b-2  p-4 text-center sm:text-left font-bold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-black">Create Product</h2>
                                 <div className="p-4 w-full bg-white rounded-lg overflow-hidden shadow hover:shadow-md">
                                     <Form method="post" encType="multipart/form-data">
                                         <div className="flex flex-col gap-4">
                                             <div className="mb-4 pt-0 flex flex-col">
-                                                <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="name">Shop name</label>
+                                                <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="name">Product name</label>
                                                 <input type="text" id="name" name="name" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
                                             </div>
                                             <div className="mb-4 pt-0 flex flex-col">
-                                                <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="description">Shop description</label>
+                                                <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="description">Product description</label>
                                                 <input type="text" id="description" name="description" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
                                             </div>
                                             <div className="mb-4 pt-0 flex flex-col">
-                                                <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="description">Shop postcode</label>
-                                                <input type="text" id="postcode" name="postcode" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
+                                                <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="description">Product price</label>
+                                                <input type="number" id="price" name="price" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
                                             </div>
+                                            <input type="hidden" id="shopid" name="shopid" value={shop.id} className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
+
+
                                             <div className="pt-0 flex flex-col">
                                                 <label className="mb-4 text-gray-600 text-lg font-light" htmlFor="upload">Logo</label>
                                                 <label htmlFor="upload" className="flex flex-col items-center justify-center border-4 border-gray-300 border-dashed rounded h-36 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300 cursor-pointer">
@@ -101,20 +99,6 @@ export default function Index() {
                         </div>
                     </div>
             </section>
-            <section className="my-36">
-                    <div className="container mx-auto px-2">
-                        <div className="space-y-12">
-                            <div className="space-y-6">
-                                <h2 className="text-center sm:text-left font-bold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-black">My Shops</h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4 w-full">
-                                    { data && data.map((shop: Shop) => {return (
-                                        <ShopAdminCard key={shop.id} shop={shop}/>
-                                    )})}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </main>
         </>
     );

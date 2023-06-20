@@ -4,10 +4,14 @@ import { useParams } from "@remix-run/react";
 import { getShopById } from "~/models/shops.server";
 import { ItemCard } from "~/components/ui";
 import {  useLoaderData } from "@remix-run/react";
+import { json } from "stream/consumers";
+import { getProductsByShopId } from "~/models/products.server";
+import { Products } from "@prisma/client";
 
 export async function loader({ params }: LoaderArgs) {
-    const shop = getShopById(params.id);
-    return shop;
+    const shop = await getShopById(params.id);
+    const products = await getProductsByShopId(shop.id);
+    return { shop, products };
 }
 
 
@@ -16,9 +20,9 @@ export async function loader({ params }: LoaderArgs) {
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Search` }];
 
 export default function Index() {
-    const data: Shop = useLoaderData();
+    const { shop, products } = useLoaderData();
 
-    if(!data) return <div>Shop not found</div>
+    if(!shop) return <div>Shop not found</div>
   return (
     <>
         <HomeSideBar/>
@@ -27,12 +31,12 @@ export default function Index() {
                     <div className="container mx-auto px-2">
                         <div className="grid grid-cols-1 gap-y-12 lg:gap-24 lg:grid-cols-3">
                             <div className="space-y-6 lg:col-span-2">
-                                <h1 className="font-bold text-3xl sm:text-3xl md:text-4xl lg:text-5xl text-black">{ data.name }</h1>
+                                <h1 className="font-bold text-3xl sm:text-3xl md:text-4xl lg:text-5xl text-black">{ shop.name }</h1>
                                 <p className="text-lg text-gray-800">
-                                    { data.description }
+                                    { shop.description }
                                 </p>
                                 <div className="rounded-xl overflow-hidden relative h-80 bg-blue-100 flex justify-center items-center p-4">
-                                    <img className="object-cover cover max-w-md" src={data.image} alt={data.name} />
+                                    <img className="object-cover cover max-w-md" src={shop.image} alt={shop.name} />
                                 </div>
                             </div>
                             <div>
@@ -76,8 +80,15 @@ export default function Index() {
                             <div className="space-y-6">
                                 <h2 className="text-center sm:text-left font-bold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-black">Products</h2>
                             </div>
+                            { products.length === 0 && (
+                                <div className="flex justify-center items-center">
+                                    <span className="text-gray-500 text-lg m-auto">No products found</span>
+                                </div>
+                            )}
                             <div className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4 w-full">
-                                <ItemCard/>
+                                { products && products.map((product: Products) => {return (
+                                    <ItemCard key={shop.id}  product={product}/>
+                                )})}
                             </div>
                         </div>
                     </div>
