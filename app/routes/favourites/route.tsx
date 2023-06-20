@@ -11,6 +11,7 @@ export default function Index() {
         <HomeSideBar/>
             <main className="px-4 md:px-48 mt-12">
                 <h1 className="text-semibold text-2xl">Favourites</h1>
+                Todo
             </main>
         </>
     );
