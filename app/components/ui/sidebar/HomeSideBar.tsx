@@ -5,7 +5,6 @@ import { Dropdown } from 'flowbite-react';
 import { useOptionalUser } from "~/utils";
 import { CartTray } from "./../cart/CartTray"
 
-
 export default function SideBarHome() {
 	const [navbarOpen, setNavbarOpen] = useState(false);
 	const user = useOptionalUser();
@@ -43,13 +42,29 @@ export default function SideBarHome() {
 							<Dropdown inline label={<User/>}>
 								{ user?.email ? 
 									<>
+										<Dropdown.Header>
+											<span className="block text-sm">
+												{ user?.firstName } { user?.lastName }
+											</span>
+											<span className="block truncate text-sm font-medium">
+												{ user?.email }
+											</span>
+										</Dropdown.Header>
+										<Dropdown.Item>
+											<Link to="/company/dashboard">
+												Dashboard
+											</Link>
+										</Dropdown.Item>
+										<Dropdown.Divider/>
+
 										<Dropdown.Item>
 											<form action="/logout" method="post">
-												<button type="submit" className="button">
+												<button type="submit" className="button text-red-500">
 												Logout
 												</button>
 											</form>
 										</Dropdown.Item>
+							
 									</> 
 								: 
 								<>

@@ -17,7 +17,8 @@ export const loader = async ({ request }: LoaderArgs) => {
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
   const resp = await axios.get(`https://controleerbtwnummer.eu/api/validate/${formData.get('vat')}.json`)
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+  const redirectTo = safeRedirect(formData.get("redirectTo"), "/company/dashboard");
+  
 
   if (!validateEmail(formData.get('email'))) {
     return json(
@@ -67,7 +68,7 @@ export const action = async ({ request }: ActionArgs) => {
     );
   }
 
-  const user = await createUser(formData.get('email'), formData.get('password'), formData.get('vat'));
+  const user = await createUser(formData.get('email'), formData.get('password'), formData.get('vat'), formData.get('firstName'), formData.get('lastName'));
 
 
   return createUserSession({
@@ -76,7 +77,6 @@ export const action = async ({ request }: ActionArgs) => {
     request,
     userId: user.id,
   });
-  )
 };
 
 export const meta: V2_MetaFunction = () => [{ title: "Sign Up" }];

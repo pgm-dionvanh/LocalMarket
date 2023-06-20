@@ -1,6 +1,6 @@
 import { Heart, GitHub } from "react-feather";
 import { Link } from "@remix-run/react";
-import Shop from "../../../interfaces/shop.interface.ts";
+import Shop from "~/interfaces/shop.interface.ts";
 export default function ShopCard({ shop }: Shop) {
     return (
         <div key={shop.id} className="relative p-4 w-full bg-white rounded-lg overflow-hidden shadow hover:shadow-md">
