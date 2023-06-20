@@ -108,6 +108,19 @@ export default function LoginPage() {
                           value={searchParams.get('redirectTo') ?? undefined}
                         />
                         <div>
+
+                          {actionData?.errors.email && (
+                              <div className="flex">
+                                <div className="flex-shrink-0">
+                                  <X className="h-5 w-5 text-red-400" aria-hidden="true" />
+                                </div>
+                                <div className="ml-3">
+                                  <h3 className="text-sm font-medium text-red-800">
+                                    {actionData.errors.email}
+                                  </h3>
+                                </div>
+                              </div>
+                          )}
                           <label
                             htmlFor="email"
                             className="block text-sm font-medium text-gray-700"
