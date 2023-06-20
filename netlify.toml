@@ -1,5 +1,5 @@
 [build]
-  command = "remix build"
+  command = "remix build && prisma generate && prisma migrate deploy"
   publish = "public"
 
 [dev]
