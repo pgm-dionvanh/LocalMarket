@@ -46,7 +46,7 @@ export default function SideBarHome() {
 								: 
 								<>
 									<Dropdown.Item>
-										<Link to="/login">Login</Link>
+										<Link to="/signin">Login</Link>
 									</Dropdown.Item>
 									<Dropdown.Item>
 										<Link to="/signup">Sign up</Link>
@@ -54,6 +54,11 @@ export default function SideBarHome() {
 								</>
 								}
 							</Dropdown>
+						</li>
+						<li>
+							<Link to="/favourites">
+								<Heart/>
+							</Link>
 						</li>
 						<li>
 							<ShoppingCart className="cursor-pointer" onClick={() => setCardOpen(true)}/>
