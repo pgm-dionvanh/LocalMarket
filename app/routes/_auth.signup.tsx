@@ -17,8 +17,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
   const resp = await axios.get(`https://controleerbtwnummer.eu/api/validate/${formData.get('vat')}.json`)
-  console.log(resp.data)
-  
+  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
   if (!validateEmail(formData.get('email'))) {
     return json(
@@ -41,7 +40,7 @@ export const action = async ({ request }: ActionArgs) => {
     );
   }
 
-  if(formData.get('password')?.length < 8) {
+  if(formData?.get('password').length < 8) {
     return json(
       { errors: { email: null, password: "Password is too short" } },
       { status: 400 }
@@ -55,9 +54,28 @@ export const action = async ({ request }: ActionArgs) => {
     );
   }
 
-  return json({
-      errors: { vat: null, password: null, email: null } /* set errors in response */
-    },
+  const existingUser = await getUserByEmail(formData.get('email'));
+  if (existingUser) {
+    return json(
+      {
+        errors: {
+          email: "A user already exists with this email",
+          password: null,
+        },
+      },
+      { status: 400 }
+    );
+  }
+
+  const user = await createUser(formData.get('email'), formData.get('password'), formData.get('vat'));
+
+
+  return createUserSession({
+    redirectTo,
+    remember: false,
+    request,
+    userId: user.id,
+  });
   )
 };
 
