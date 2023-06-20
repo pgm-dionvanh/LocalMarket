@@ -13,7 +13,28 @@ export default function Index() {
   return (
     <>
       <HomeSideBar/>
-      <main className="px-4 md:px-24">
+      <main className="flex-1">
+
+      <section class="background-radial-gradient mb-32 text-center lg:text-left">
+    <div class="relative overflow-hidden bg-cover bg-no-repeat bg-[50%] bg-[url('https://mdbcdn.b-cdn.net/img/new/standard/nature/071.jpg')] h-[500px]">
+      <div
+        class="absolute top-0 right-0 bottom-0 left-0 h-full w-full overflow-hidden bg-[hsla(0,0%,0%,0.75)] bg-fixed">
+        <div class="flex h-full items-center justify-center">
+          <div class="max-w-[800px] px-6 py-6 text-center text-white md:py-0 md:px-12">
+            <h2 class="mb-12 text-5xl font-bold leading-tight tracking-tight md:text-6xl xl:text-7xl">
+              <span class="inline-block">Local Market</span>
+            </h2>
+            <p class="text-lg">
+              Where everything comes together.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+        <div className="px-4 md:px-24">
+          
         <section id="search">
             <div className="flex p-4 w-full">
               <div className="relative w-full">
@@ -158,7 +179,8 @@ export default function Index() {
             </div>
           </div>
         </section>
-        
+        </div>
+
       </main>
       <Footer/>
 

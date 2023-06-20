@@ -13,7 +13,7 @@ export default function SideBarHome() {
 
     return (
 		<>
-		<header className="flex flex-wrap items-center justify-between p-4 bg-[#F3F3F3]">
+		<header className="flex flex-wrap items-center justify-between p-4 shadow-">
 			<div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
 				<div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
 					<Link className="text-2xl font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-[#FF5C28]" to="/">
