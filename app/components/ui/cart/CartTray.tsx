@@ -22,6 +22,7 @@ export function CartTray({
     setState(localStorage.getItem('cartItems'));
   }, [state]);
 
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
@@ -78,8 +79,8 @@ export function CartTray({
                                 <li  className="py-6 flex">
                                   <div className="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
                                     <img
-                                      src="https://www.alsem.nl/shop/5049-home_default/advocaat-klok-20cl-potflesje-18-0200-120005.jpg"
-                                      alt="hello"
+                                      src={state.itemImage}
+                                      alt={state.itemName}
                                       className="w-full h-full object-center object-cover"
                                     />
                                   </div>

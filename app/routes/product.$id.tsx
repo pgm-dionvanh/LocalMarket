@@ -19,6 +19,21 @@ export default function Index() {
     const query = params.query;
     const data = useLoaderData();
 
+    const onSaveState = (itemName: string, itemPrice: string, itemQuantity: number, image: string) => {
+        console.log('test')
+        let products = [];
+        if(localStorage.getItem('cartItems')){
+            products = JSON.parse(localStorage.getItem('cartItems'));
+        }
+
+        const item = products.find((item: any) => item.itemName === itemName);
+
+        if(!item) {
+            products.push({ itemName: itemName, itemPrice: itemPrice, itemQuantity: itemQuantity , itemImage: image});
+            localStorage.setItem('cartItems', JSON.stringify(products));
+        }
+    }
+
   return (
     <>
         <HomeSideBar/>
@@ -34,7 +49,7 @@ export default function Index() {
                                 <div className="rounded-xl overflow-hidden relative h-80 bg-blue-100 flex justify-center items-center p-4">
                                     <img className="object-cover cover max-w-md" src={data.image} alt={data.name} />
                                 </div>
-                                <button className="mt-4 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md w-full" type="submit">Add to cart</button>
+                                <button onClick={() => onSaveState(data.name, data.price, 1, data.image)} className="mt-4 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md w-full" type="submit">Add to cart</button>
 
                             </div>
                             <div>

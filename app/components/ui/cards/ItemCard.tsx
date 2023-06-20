@@ -4,19 +4,6 @@ import { CartTray } from "../cart/CartTray";
 import { Products } from "@prisma/client";
 export default function ItemCard({ product }: Products) {
 
-    const onSaveState = (itemName: string, itemPrice: string, itemQuantity: number) => {
-        let products = [];
-        if(localStorage.getItem('cartItems')){
-            products = JSON.parse(localStorage.getItem('cartItems'));
-        }
-
-        const item = products.find((item: any) => item.itemName === itemName);
-
-        if(!item) {
-            products.push({ itemName: itemName, itemPrice: itemPrice, itemQuantity: itemQuantity });
-            localStorage.setItem('cartItems', JSON.stringify(products));
-        }
-    }
     return (
         <div className="relative flex w-full md:max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
                                     <a className="relative mt-3 flex h-60 overflow-hidden rounded-xl" href="#">

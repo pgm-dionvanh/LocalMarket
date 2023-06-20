@@ -6,7 +6,6 @@ async function getReviews(): Promise<Review[]> {
 }
 
 async function getReviewsByProductId(productId: string): Promise<Review[]> {
-  console.log(productId)
   return prisma.review.findMany({
     where: {
       id: productId,

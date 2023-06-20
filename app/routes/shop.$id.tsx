@@ -19,6 +19,7 @@ export async function loader({ params }: LoaderArgs) {
 
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Search` }];
 
+
 export default function Index() {
     const { shop, products } = useLoaderData();
 
