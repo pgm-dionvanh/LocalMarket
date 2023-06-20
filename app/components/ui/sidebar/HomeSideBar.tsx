@@ -30,7 +30,15 @@ export default function SideBarHome() {
 						}
 						id="example-navbar-danger"
 					>
-						<ul className="flex flex-col items-center gap-4 lg:flex-row list-none lg:ml-auto">
+						<ul className="flex flex-col items-center w-full md:w-auto gap-4 lg:flex-row list-none lg:ml-auto">
+						<li>
+							<Link to="/favourites">
+								<Heart/>
+							</Link>
+						</li>
+						<li>
+							<ShoppingCart className="cursor-pointer" onClick={() => setCardOpen(true)}/>
+						</li>
 						<li className="nav-item">
 							<Dropdown inline label={<User/>}>
 								{ user?.email ? 
@@ -54,14 +62,6 @@ export default function SideBarHome() {
 								</>
 								}
 							</Dropdown>
-						</li>
-						<li>
-							<Link to="/favourites">
-								<Heart/>
-							</Link>
-						</li>
-						<li>
-							<ShoppingCart className="cursor-pointer" onClick={() => setCardOpen(true)}/>
 						</li>
 					</ul>
 				</div>

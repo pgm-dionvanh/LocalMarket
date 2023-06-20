@@ -1,19 +1,23 @@
 import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import HomeSideBar from "./../components/ui/sidebar/HomeSideBar"
 import { useParams } from "@remix-run/react";
+import { getShopById } from "./../models/shops.server.ts";
+import {  useLoaderData } from "@remix-run/react";
+import Shop from "./../interfaces/shop.interface.ts";
 
 export async function loader({ params }: LoaderArgs) {
-    const searchQuery = params.id;
-    return searchQuery
+    const shop = getShopById(params.id);
+    return shop;
 }
 
 
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Search` }];
 
 export default function Index() {
-    const params = useParams();
-    const query = params.id;
+    const data: Shop = useLoaderData();
+    console.log(data)
 
+    if(!data) return <div>Shop not found</div>
   return (
     <>
         <HomeSideBar/>
@@ -22,7 +26,7 @@ export default function Index() {
                     <div className="container mx-auto px-2">
                         <div className="grid grid-cols-1 gap-y-12 lg:gap-24 lg:grid-cols-3">
                             <div className="space-y-6 lg:col-span-2">
-                                <h1 className="font-bold text-3xl sm:text-3xl md:text-4xl lg:text-5xl text-black">De Klok</h1>
+                                <h1 className="font-bold text-3xl sm:text-3xl md:text-4xl lg:text-5xl text-black">{ data.name }</h1>
                                 <p className="text-lg text-gray-800">
                                     Als ambachtelijk familiebedrijf zweren wij bij De Klok trouw aan onze waarden van weleer.
 

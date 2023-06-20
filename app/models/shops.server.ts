@@ -2,11 +2,12 @@ import type { Shops } from "@prisma/client";
 import { prisma } from "~/db.server";
 
 
-async function getShopById(id: Shops["id"]) {
+export async function getShopById(id: Shops["id"]) {
   return prisma.shops.findUnique({ where: { id } });
 }
 
-async function getAllShops(): Promise<Shops[]> {
+export async function getAllShops(): Promise<Shops[]> {
+
   return prisma.shops.findMany();
 }
 
