@@ -1,7 +1,3 @@
-[build]
-  command = "remix build && prisma generate && prisma migrate deploy"
-  publish = "public"
-
 [dev]
   command = "remix watch"
   port = 3000
