@@ -1,6 +1,5 @@
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
-  serverBuildTarget: "netlify",
   cacheDirectory: "./node_modules/.cache/remix",
   future: {
     v2_errorBoundary: true,
