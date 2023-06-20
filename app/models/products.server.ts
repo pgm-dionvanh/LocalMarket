@@ -1,7 +1,7 @@
 import { Products } from "@prisma/client";
 import { prisma } from "~/db.server";
 
-async function getProductById(id: Products["id"]) {
+export async function getProductById(id: Products["id"]) {
   return await prisma.products.findUnique({ where: { id } });
 }
 

@@ -105,6 +105,12 @@ export function CartTray({
                           }
                         </div>
                     </div>
+                    <div className='w-full flex justify-center items-center'>
+                    <Link to="/checkout"  className="mt-4 px-4 py-2 text-center bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md w-full m-auto">
+                      Checkout
+                    </Link>
+                    </div>
+
                   </div>
 
           
