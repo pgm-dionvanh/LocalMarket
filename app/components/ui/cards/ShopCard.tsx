@@ -1,7 +1,7 @@
 import { Heart, GitHub } from "react-feather";
 import { Link } from "@remix-run/react";
 import Shop from "~/interfaces/shop.interface.ts";
-export default function ShopCard({ shop }: Shop) {
+export default function ShopCard({ shop }: Shop, { edit }: boolean = false) {
     return (
         <div key={shop.id} className="relative p-4 w-full bg-white rounded-lg overflow-hidden shadow hover:shadow-md">
             <div>
@@ -23,9 +23,9 @@ export default function ShopCard({ shop }: Shop) {
             </h2>
 
             <p className="mt-2 text-gray-800 text-sm">{ shop.description }</p>
-            <Link to="/shop/1">
+            <Link to={edit ? `/company/edit/${shop.id}` : `/shop/${shop.id}`}>
             <button  className="mt-4 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md w-full">
-                View shop
+                { edit ? "Edit shop" : "View shop" }
             </button>
             </Link>
         </div>
