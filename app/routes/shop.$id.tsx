@@ -11,6 +11,8 @@ export async function loader({ params }: LoaderArgs) {
 }
 
 
+
+
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Search` }];
 
 export default function Index() {
@@ -28,12 +30,10 @@ export default function Index() {
                             <div className="space-y-6 lg:col-span-2">
                                 <h1 className="font-bold text-3xl sm:text-3xl md:text-4xl lg:text-5xl text-black">{ data.name }</h1>
                                 <p className="text-lg text-gray-800">
-                                    Als ambachtelijk familiebedrijf zweren wij bij De Klok trouw aan onze waarden van weleer.
-
-                                    Bij ons worden onze producten nog vervaardigd zoals 67 jaar geleden. Hier geen poedereieren of voorgescheiden eieren in plastiekverpakking, geen kleurstoffen, geen dikmiddelen of zetmeel om de verkoop te forceren, geen smaakversterkers.
+                                    { data.description }
                                 </p>
                                 <div className="rounded-xl overflow-hidden relative h-80 bg-blue-100 flex justify-center items-center p-4">
-                                    <img src="https://deklok.be/wp-content/themes/wp-DeKlok/img/likeurstokerij-de-klok-sm.png" alt="De klok" />
+                                    <img className="object-cover cover max-w-md" src={data.image} alt={data.name} />
                                 </div>
                             </div>
                             <div>

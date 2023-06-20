@@ -85,7 +85,6 @@ export default function SignUpPage() {
     const [searchParams] = useSearchParams();
     const formErrors = useActionData();
 
-    console.log(formErrors)
     return (
     <>
     <HomeSideBar/>

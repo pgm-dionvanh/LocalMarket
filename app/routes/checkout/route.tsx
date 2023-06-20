@@ -32,7 +32,6 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function Index() {
     const resp = useLoaderData();
-    console.log(resp)
     return (
     <>
         <HomeSideBar/>

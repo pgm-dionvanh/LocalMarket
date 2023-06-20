@@ -31,6 +31,7 @@ model Shops {
   id   String @id @default(cuid())
   name  String
   description String @default("New shop")
+  image String
   owner User   @relation(fields: [ownerId], references: [id])
   ownerId String
   products Products[]

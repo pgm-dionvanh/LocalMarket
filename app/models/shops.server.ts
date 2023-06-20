@@ -11,7 +11,7 @@ export async function getAllShops(): Promise<Shops[]> {
   return prisma.shops.findMany();
 }
 
-async function createShop(body: Shops) {
+export async function createShop(body: Shops) {
   const shopExists = await checkIfShopExists(body.name);
 
   if(shopExists) {
