@@ -3,7 +3,6 @@ import { Carousel } from 'flowbite-react';
 import { Search, Heart } from 'react-feather';
 import { useNavigate } from "react-router-dom";
 import { Link } from "@remix-run/react";
-import Footer from "../components/ui/Footer/Footer";
 import { ShopCard, HomeSideBar, Hero } from "../components/ui";
 import { getAllShops } from "./../models/shops.server.ts";
 import {  useLoaderData } from "@remix-run/react";
@@ -89,8 +88,6 @@ export default function Index() {
         </div>
 
       </main>
-      <Footer/>
-
     </>
   );
 }
