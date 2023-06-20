@@ -4,7 +4,7 @@ import { Carousel } from 'flowbite-react';
 import { Search, Heart } from 'react-feather';
 import { useNavigate } from "react-router-dom";
 import { Link } from "@remix-run/react";
-
+import Footer from "../components/ui/Footer/Footer";
 
 export const meta: V2_MetaFunction = () => [{ title: "Local Market ~ Home" }];
 
@@ -158,7 +158,10 @@ export default function Index() {
             </div>
           </div>
         </section>
+        
       </main>
+      <Footer/>
+
     </>
   );
 }
