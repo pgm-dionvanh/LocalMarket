@@ -1,9 +1,15 @@
 import type { ActionFunction, V2_MetaFunction } from "@remix-run/node";
 import { HomeSideBar, AdminNav } from "~/components/ui";
-import { unstable_createFileUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
+import { json, unstable_createFileUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { useUser } from "~/utils";
+import { requireUserId } from "~/session.server"
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Dashboard` }];
+
+export const loader = async ({ request }: LoaderArgs) => {
+    const userId = await requireUserId(request);
+    return json({ userId });
+  };
 
 export const fileUploadHandler = unstable_createFileUploadHandler({
     directory: './public/uploads',
