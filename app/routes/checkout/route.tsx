@@ -11,7 +11,7 @@ export const action: ActionFunction = async ({ request }) => {
     const resp = await axios.post('https://api.mollie.com/v2/payments', { 
         "description": "LC Cart", 
         "redirectUrl": "https://localmarketpgm.netlify.app/paymentStatus",
-        "webhookUrl": "https://localmarketpgm.netlify.app/paymentStatus?webhook", // Reminder: only works with a server that mollie can view
+        "webhookUrl": "https://localmarketpgm.netlify.app/paymentStatus", // Reminder: only works with a server that mollie can view
         "method": "bancontact",
         "amount": {
           "value": "10.00",
