@@ -100,7 +100,7 @@ export function CartTray({
                                           </Link>
                                         </h3>
                                         <p className="ml-4">
-                                          € { item.price}
+                                          € { item.itemTotal}
                                         </p>
                                       </div>
                                     </div>
@@ -166,7 +166,6 @@ export function CartTray({
                       </div>
                     </div>
                   )}
-
                   </div>
 
           
