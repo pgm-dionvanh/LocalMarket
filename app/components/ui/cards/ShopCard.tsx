@@ -2,12 +2,18 @@ import { Heart, GitHub } from "react-feather";
 import { Link } from "@remix-run/react";
 import Shop from "~/interfaces/shop.interface.ts";
 export default function ShopCard({ shop }: Shop) {
+    const addFavourites = (shopBody: Shop) => {
+        const favourites = localStorage.getItem("favourites") ? JSON.parse(localStorage.getItem("favourites")) as unknown as [] : [];
+        favourites.push({ ...shopBody });
+
+        localStorage.setItem("favourites", JSON.stringify(favourites));
+    }
     return (
         <div key={shop.id} className="relative p-4 w-full bg-white rounded-lg overflow-hidden shadow hover:shadow-md">
             <div>
             <div className="absolute top-0 right-0 mt-2 mr-2 p-4 z-20 flex justify-between">
             <div className="inline-flex items-center justify-center w-8 h-8 p-2 rounded-full bg-white shadow-sm">
-                <Heart className="hover:fill-red-500 hover:text-red-500"/>
+                <Heart onClick={() => addFavourites(shop)} className="hover:fill-red-500 hover:text-red-500"/>
             </div>
             </div>
 
