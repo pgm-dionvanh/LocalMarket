@@ -6,7 +6,8 @@ import { ItemCard } from "~/components/ui";
 import {  useLoaderData } from "@remix-run/react";
 import { json } from "stream/consumers";
 import { getProductsByShopId } from "~/models/products.server";
-import { Products } from "@prisma/client";
+import { Products, Review } from "@prisma/client";
+import { Rating } from 'react-simple-star-rating'
 
 export async function loader({ params }: LoaderArgs) {
     const shop = await getShopById(params.id);
@@ -22,7 +23,6 @@ export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Search` }];
 
 export default function Index() {
     const { shop, products } = useLoaderData();
-
     if(!shop) return <div>Shop not found</div>
   return (
     <>
@@ -83,6 +83,24 @@ export default function Index() {
                         <div className="space-y-12">
                             <div className="space-y-6">
                                 <h2 className="text-center sm:text-left font-bold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-black">Reviews</h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4 w-full">
+                                { products && products.map((product: Products) => product.reviews.map((review: Review) => {return  (
+                                    <div className="p-4 w-full bg-white rounded-lg overflow-hidden shadow hover:shadow-md" key={review.id}>
+                                        <div>
+                                            <span>Name: { review.name }</span>
+                                        </div>
+                                        <div>
+                                            <span>Description: { review.text }</span>
+                                        </div>
+                                        <div>
+                                            <span>Product: { review.product.name }</span>
+                                        </div>
+                                        <div>
+                                            <span className="flex items-center gap-4">Rating: <Rating readonly={true} initialValue={review.rating} size={16}  emptyStyle={{ display: "flex" }} fillStyle={{ display: "-webkit-inline-box" }} /></span>
+                                        </div>
+                                    </div>
+                                )}))}
+                                </div>
                             </div>
                         </div>
                     </div>

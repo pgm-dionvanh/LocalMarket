@@ -2,12 +2,16 @@ import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import HomeSideBar from "./../components/ui/sidebar/HomeSideBar"
 
 import { Carousel } from 'flowbite-react';
-import { Form, useLoaderData, useParams } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useParams } from "@remix-run/react";
 import { getShopByPostCode } from "~/models/shops.server";
 import { ShopCard } from "~/components/ui";
 import { getProductById } from "~/models/products.server";
 import { useCart } from "react-use-cart";
 import { createReviewForShop } from "~/models/reviews.server";
+import { Rating } from 'react-simple-star-rating'
+import { useState } from "react";
+import toast from 'react-hot-toast';
+import { useEffect } from "react";
 
 export async function loader({ params }: LoaderArgs) {
     const id = getProductById(params?.id);
@@ -18,22 +22,36 @@ export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Search` }];
 
 export async function action({ request }: ActionArgs) {
     const formData = await request.formData();
-
+    console.log(request)
     const addReview = createReviewForShop({
         name: formData.get("name"),
         text: formData.get("description"),
-        rating: 5,
+        rating: parseInt(formData.get("rating")),
         productId: formData.get("productid"),
     })
-    return {}
+
+    return { notification: "Review added!"}
 }
 
 export default function Index() {
     const params = useParams();
     const query = params.query;
     const data = useLoaderData();
+    const action = useActionData();
     const { addItem } = useCart();
 
+
+    if(action?.notification)
+    toast.success("Review added!");
+
+    const [rating, setRating] = useState(0)
+
+    // Catch Rating value
+    const handleRating = (rate: number) => {
+      setRating(rate)
+  
+      // other logic
+    }
 
   return (
     <>
@@ -50,7 +68,7 @@ export default function Index() {
                                 <div className="rounded-xl overflow-hidden relative h-80 bg-blue-100 flex justify-center items-center p-4">
                                     <img className="object-cover cover max-w-md" src={data.image} alt={data.name} />
                                 </div>
-                                <button onClick={() => addItem({ id: data.id, price: data.price, name: data.name, image: data.image, description: data.image, key: data.name })} className="mt-4 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md w-full" type="submit">Add to cart</button>
+                                <button onClick={() => toast.success("Added to cart") && addItem({ id: data.id, price: data.price, name: data.name, image: data.image, description: data.image, key: data.name })} className="mt-4 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md w-full" type="submit">Add to cart</button>
 
                             </div>
                             <div>
@@ -77,10 +95,15 @@ export default function Index() {
                                                 <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="description">Description</label>
                                                 <input type="text" id="description" name="description" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
                                                 <input type="hidden" id="productid" name="productid" value={data.id} className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
+                                                <input type="hidden" id="rating" name="rating" value={rating} className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
 
                                             </div>
-                                           
+
                                         </div>
+                                            <Rating
+                                                emptyStyle={{ display: "flex" }} transition={true} fillStyle={{ display: "-webkit-inline-box" }} 
+                                                onClick={handleRating}
+                                            />
                                         <button className="mt-4 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md w-full" type="submit">Create</button>
                                     </Form>
                                 </div>

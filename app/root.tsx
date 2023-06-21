@@ -10,9 +10,12 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import showNotification from "~/utils/notification/showNotification";
 import { getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
-import { CartProvider, useCart } from "react-use-cart";
+import { CartProvider } from "react-use-cart";
+import { Toaster } from 'react-hot-toast';
+import { useEffect } from "react";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -24,6 +27,14 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export default function App() {
+
+  useEffect(() => {
+ 
+
+    showNotification({ text: "Initialized", type: "success"});
+
+  }, []);
+
   return (
     <html lang="en">
       <head>
@@ -35,10 +46,13 @@ export default function App() {
       <body className="flex flex-col min-h-screen">
         <CartProvider>
         <Outlet />
+        <Toaster />
         <ScrollRestoration />
         <Scripts />
+        
         <LiveReload />
         </CartProvider>
+        
       </body>
     </html>
   );

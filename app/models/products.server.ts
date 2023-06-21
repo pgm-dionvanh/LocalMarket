@@ -6,9 +6,18 @@ export async function getProductById(id: Products["id"]) {
 }
 
 export async function getProductsByShopId(shopId: Products["shopId"]) {
-  return await prisma.products.findMany({ where: {
+  return await prisma.products.findMany(
+  { where: {
     shopId: shopId
-  } });
+  },
+  include: {
+    reviews: {
+      include: {
+        product: true
+      }
+    }
+  }
+  });
 }
 
 async function getAllProducts(): Promise<Products[]> {
@@ -20,4 +29,8 @@ export async function createProduct(body: Products){
   return await prisma.products.create({
     data: body,
   });
+}
+
+export async function deleteProduct(id: Products["id"]) {
+  return await prisma.products.delete({ where: { id } });
 }

@@ -1,4 +1,4 @@
-import type { V2_MetaFunction } from "@remix-run/node";
+import type { ActionArgs, ActionFunction, V2_MetaFunction } from "@remix-run/node";
 import HomeSideBar from "./../../components/ui/sidebar/HomeSideBar"
 import { Carousel } from 'flowbite-react';
 import { LoaderArgs } from "@remix-run/node";
@@ -6,13 +6,14 @@ import { json, redirect } from "@remix-run/node";
 import createMollieClient from "@mollie/api-client";
 import axios from "axios"
 import { Form, useFetcher, useLoaderData } from "@remix-run/react";
+import { useCart } from "react-use-cart";
 
 export const meta: V2_MetaFunction = () => [{ title: "Local Market ~ Home" }];
 
-export async function loader({ request }: LoaderArgs) {
+export const action: ActionFunction = async ({ request }) => {
     const resp = await axios.post('https://api.mollie.com/v2/payments', { 
-        "description": "test", 
-        "redirectUrl": "http://localhost:3000", 
+        "description": "LC Cart", 
+        "redirectUrl": "http://localhost:3000/paymentStatus=success", 
         "method": "bancontact",
         "amount": {
           "value": "10.00",
@@ -26,12 +27,12 @@ export async function loader({ request }: LoaderArgs) {
             'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
         }
     })
-    return json({ paymentLink: await resp.data._links.checkout.href })
-
+    return redirect(await resp.data._links.checkout.href);
 }
 
 export default function Index() {
     const resp = useLoaderData();
+
     return (
     <>
         <HomeSideBar/>
@@ -43,11 +44,6 @@ export default function Index() {
                         </h2>
                 </div>
                 <div className="mt-10 border-t border-gray-200 pt-10">
-                <Form
-                    method="post"
-                    action="/api/active-order"
-
-                >
                     <input type="hidden" name="action" value="setOrderCustomer" />
                     <div className="mt-4">
                     <label
@@ -104,7 +100,6 @@ export default function Index() {
                         </div>
                     </div>
                     </div>
-                </Form>
                 </div>
 
                 <Form method="post">
@@ -169,13 +164,14 @@ export default function Index() {
                     </div>
 
                     </div>
-                </Form>            
-                <button
-                    type="button"
+                    <button
+                    type="submit"
                     className={'flex bg-[#FF5C28] hover:bg-[#ba3d14] w-full items-center justify-center space-x-2 mt-24 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500'}
                 >
                     <span>Proceed to payment</span>
                 </button>
+                </Form>            
+
             </div>
             </main>
         </>
