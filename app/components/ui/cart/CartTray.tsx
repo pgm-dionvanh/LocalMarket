@@ -80,7 +80,7 @@ export function CartTray({
 
                     <div className="mt-8">
                         <div className="flex items-center justify-center h-48 text-xl text-gray-400">
-                        {items.map((item) => (
+                        { items.map((item) => (
                             <ul key={item.id} role="list" className="-my-6 divide-y divide-gray-200">
                                 <li  className="py-6 flex">
                                   <div className="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
@@ -144,7 +144,7 @@ export function CartTray({
                         </div>
                     </div>
 
-                    {totalItems && (
+                    {totalUniqueItems > 0 && (
                     <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
                       <div className="flex justify-between text-base font-medium text-gray-900">
                         <p>Subtotal</p>
