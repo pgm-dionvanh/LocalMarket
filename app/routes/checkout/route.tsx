@@ -5,7 +5,7 @@ import { LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import createMollieClient from "@mollie/api-client";
 import axios from "axios"
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Form, useFetcher, useLoaderData } from "@remix-run/react";
 
 export const meta: V2_MetaFunction = () => [{ title: "Local Market ~ Home" }];
 
@@ -43,8 +43,133 @@ export default function Index() {
                         </h2>
                 </div>
                 <div className="mt-10 border-t border-gray-200 pt-10">
-                        todo
+                <Form
+                    method="post"
+                    action="/api/active-order"
+
+                >
+                    <input type="hidden" name="action" value="setOrderCustomer" />
+                    <div className="mt-4">
+                    <label
+                        htmlFor="emailAddress"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Email address
+                    </label>
+                    <div className="mt-1">
+                        <input
+                        type="email"
+                        id="emailAddress"
+                        name="emailAddress"
+                        autoComplete="email"
+                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        />
+                    </div>
+
+                    </div>
+                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+                    <div>
+                        <label
+                        htmlFor="firstName"
+                        className="block text-sm font-medium text-gray-700"
+                        >
+                        First name
+                        </label>
+                        <div className="mt-1">
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            autoComplete="given-name"
+                            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                        htmlFor="lastName"
+                        className="block text-sm font-medium text-gray-700"
+                        >
+                        Last name
+                        </label>
+                        <div className="mt-1">
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            autoComplete="family-name"
+                            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        />
+                        </div>
+                    </div>
+                    </div>
+                </Form>
                 </div>
+
+                <Form method="post">
+                    <input type="hidden" name="action" value="setCheckoutShipping" />
+                    <div className="mt-10 border-t border-gray-200 pt-10">
+                    <h2 className="text-lg font-medium text-gray-900">
+                        Shipping information
+                    </h2>
+                    </div>
+                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+                    <div>
+                        <label
+                        htmlFor="firstName"
+                        className="block text-sm font-medium text-gray-700"
+                        >
+                        Street name
+                        </label>
+                        <div className="mt-1">
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            autoComplete="given-name"
+                            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                        htmlFor="lastName"
+                        className="block text-sm font-medium text-gray-700"
+                        >
+                        House number
+                        </label>
+                        <div className="mt-1">
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            autoComplete="family-name"
+                            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        />
+                        </div>
+                    </div>
+                    </div>
+                    <div className="mt-4">
+                    <label
+                        htmlFor="emailAddress"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Postcode
+                    </label>
+                    <div className="mt-1">
+                        <input
+                        type="email"
+                        id="emailAddress"
+                        name="emailAddress"
+                        autoComplete="email"
+                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        />
+                    </div>
+
+                    </div>
+                </Form>            
                 <button
                     type="button"
                     className={'flex bg-[#FF5C28] hover:bg-[#ba3d14] w-full items-center justify-center space-x-2 mt-24 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500'}

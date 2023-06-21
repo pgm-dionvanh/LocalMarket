@@ -7,13 +7,21 @@ import { getShopByPostCode } from "~/models/shops.server";
 import { ShopCard } from "~/components/ui";
 import { getProductById } from "~/models/products.server";
 import { useCart } from "react-use-cart";
+import { createReviewForShop } from "~/models/reviews.server";
 
 export async function loader({ params }: LoaderArgs) {
-    const id = getProductById(params.id);
+    const id = getProductById(params?.id);
     return id
 }
 
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Search` }];
+
+export async function action({ request }: ActionArgs) {
+    const addReview = createReviewForShop({
+        text: request.body.get("text"),
+    })
+    return {}
+}
 
 export default function Index() {
     const params = useParams();

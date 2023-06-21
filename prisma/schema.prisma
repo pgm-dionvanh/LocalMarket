@@ -55,6 +55,7 @@ model Products {
 
 model Review {
   id   String @id @default(cuid())
+  name String
   text String
   rating Int
   product Products @relation(fields: [productId], references: [id])
