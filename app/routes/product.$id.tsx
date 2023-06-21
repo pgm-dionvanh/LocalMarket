@@ -17,8 +17,13 @@ export async function loader({ params }: LoaderArgs) {
 export const meta: V2_MetaFunction = () => [{ title: `Local Market ~ Search` }];
 
 export async function action({ request }: ActionArgs) {
+    const formData = await request.formData();
+
     const addReview = createReviewForShop({
-        text: request.body.get("text"),
+        name: formData.get("name"),
+        text: formData.get("description"),
+        rating: 5,
+        productId: formData.get("productid"),
     })
     return {}
 }
@@ -71,6 +76,8 @@ export default function Index() {
                                             <div className="mb-4 pt-0 flex flex-col">
                                                 <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="description">Description</label>
                                                 <input type="text" id="description" name="description" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
+                                                <input type="hidden" id="productid" name="productid" value={data.id} className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
+
                                             </div>
                                            
                                         </div>

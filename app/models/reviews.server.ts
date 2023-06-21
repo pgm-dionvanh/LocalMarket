@@ -13,7 +13,7 @@ async function getReviewsByProductId(productId: string): Promise<Review[]> {
   });
 }
 
-export async function createReviewForShop(body: { text: string, rating: number, shopId: string, productId: string }) {
+export async function createReviewForShop(body: { name: string, text: string, rating: number, shopId: string, productId: string }) {
   return prisma.review.create({
     data: body,
   });
