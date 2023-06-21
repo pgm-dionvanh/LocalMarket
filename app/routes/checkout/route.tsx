@@ -10,7 +10,7 @@ export const meta: V2_MetaFunction = () => [{ title: "Local Market ~ Home" }];
 export const action: ActionFunction = async ({ request }) => {
     const resp = await axios.post('https://api.mollie.com/v2/payments', { 
         "description": "LC Cart", 
-        "redirectUrl": "https://localmarketpgm.netlify.app/paymentStatus",
+        "redirectUrl": "https://localmarketpgm.netlify.app/paymentStatus?orderId=1234",
         "webhookUrl": "https://localmarketpgm.netlify.app/paymentStatus", // Reminder: only works with a server that mollie can view
         "method": "bancontact",
         "amount": {
