@@ -1,9 +1,6 @@
-import type { ActionArgs, ActionFunction, V2_MetaFunction } from "@remix-run/node";
+import type { ActionFunction, V2_MetaFunction } from "@remix-run/node";
 import HomeSideBar from "./../../components/ui/sidebar/HomeSideBar"
-import { Carousel } from 'flowbite-react';
-import { LoaderArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import createMollieClient from "@mollie/api-client";
+import { redirect } from "@remix-run/node";
 import axios from "axios"
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useCart } from "react-use-cart";

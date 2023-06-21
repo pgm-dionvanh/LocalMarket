@@ -2,22 +2,27 @@ import type { V2_MetaFunction } from "@remix-run/node";
 import { Carousel } from 'flowbite-react';
 import { Search, Heart } from 'react-feather';
 import { useNavigate } from "react-router-dom";
-import { Link } from "@remix-run/react";
 import { ShopCard, HomeSideBar, Hero } from "../components/ui";
-import { getAllShops } from "~/models/shops.server.ts";
+import { getAllShops } from "~/models/shops.server";
 import {  useLoaderData } from "@remix-run/react";
-import Shop from "./../interfaces/shop.interface.ts";
+import Shop from "./../interfaces/shop.interface";
+import { RemixPagination } from '@ignisda/remix-pagination';
+
+
 export const meta: V2_MetaFunction = () => [{ title: "Local Market ~ Home" }];
 
-export const loader = async () => {
-  const shopsList = await getAllShops();
-  return shopsList;
+export const loader = async ({request}) => {
+  const url = new URL(request.url);
+  const offset = (parseInt(url.searchParams.get('page') || '1') - 1) * 10;
+
+  const shopsList = await getAllShops(offset);
+  return { shops: shopsList.data, count: shopsList.pagination.total };
  };
  
 
 export default function Index() {
   const navigate = useNavigate();
-  const data = useLoaderData();
+  const { shops, count} = useLoaderData();
 
 
   return (
@@ -46,31 +51,15 @@ export default function Index() {
         </section>
         <section className="p-4 h-[20rem]">
           <Carousel>
-            <img
-              alt="..."
-              src="https://flowbite.com/docs/images/carousel/carousel-1.svg"
-            />
-            <img
-              alt="..."
-              src="https://flowbite.com/docs/images/carousel/carousel-2.svg"
-            />
-            <img
-              alt="..."
-              src="https://flowbite.com/docs/images/carousel/carousel-3.svg"
-            />
-            <img
-              alt="..."
-              src="https://flowbite.com/docs/images/carousel/carousel-4.svg"
-            />
-            <img
-              alt="..."
-              src="https://flowbite.com/docs/images/carousel/carousel-5.svg"
-            />
+            <span className="bg-gray-500 h-full flex justify-center items-center text-white text-2xl">Wilt u een spotlight stuur een mail naar: info@localmarket.be</span>
+            <span className="bg-gray-500 h-full flex justify-center items-center text-white text-2xl">Wilt u een spotlight stuur een mail naar: info@localmarket.be</span>
+            <span className="bg-gray-500 h-full flex justify-center items-center text-white text-2xl">Wilt u een spotlight stuur een mail naar: info@localmarket.be</span>
+            <span className="bg-gray-500 h-full flex justify-center items-center text-white text-2xl">Wilt u een spotlight stuur een mail naar: info@localmarket.be</span>
           </Carousel>
         </section>
         <section>
           <div className="p-4">
-          { data.length === 0 && (
+          { shops.length === 0 && (
                   <div className="flex justify-center items-center w-full p-24">
                     <span className="text-gray-500 text-lg m-auto">No shops found</span>
                   </div>
@@ -78,14 +67,17 @@ export default function Index() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4 w-full">
     
 
-                { data && data.map((shop: Shop) => {return (
+                { shops && shops.map((shop: Shop) => {return (
                   <ShopCard key={shop.id}  shop={shop}/>
                 )})}
             </div>
           </div>
+          
         </section>
         </div>
-
+        <div className="flex items-center justify-center mt-12">
+                    <RemixPagination total={count || 0} size={20} classPrefix="lc" />
+          </div>
       </main>
     </>
   );

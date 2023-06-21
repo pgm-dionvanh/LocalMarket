@@ -6,8 +6,25 @@ export async function getShopById(id: Shops["id"]): Promise<Shops[]> {
   return prisma.shops.findUnique({ where: { id } });
 }
 
-export async function getShopByPostCode(postcode: Shops["postcode"]) {
-  return prisma.shops.findMany({ where: { postcode } });
+export async function getShopByPostCode(postcode: Shops["postcode"], offset: number) {
+
+
+  const [shops, count] = await prisma.$transaction([
+    prisma.shops.findMany({
+      where: { postcode },
+      skip: offset
+    }),
+    prisma.shops.count({ where: {
+      postcode: postcode
+    } })
+  ]);
+
+  return {
+    pagination: {
+      total: count
+    },
+    data: shops
+  };
 }
 
 export async function getShopsByCustomerId(customerId: string): Promise<Shops[]> {
@@ -18,9 +35,21 @@ export async function getShopsByCustomerId(customerId: string): Promise<Shops[]>
   })
 }
 
-export async function getAllShops(): Promise<Shops[]> {
+export async function getAllShops(offset: number) {
 
-  return prisma.shops.findMany();
+  const [shops, count] = await prisma.$transaction([
+    prisma.shops.findMany({
+      skip: offset
+    }),
+    prisma.shops.count()
+  ]);
+
+  return {
+    pagination: {
+      total: count
+    },
+    data: shops
+  };
 }
 
 export async function createShop(body: Shops) {

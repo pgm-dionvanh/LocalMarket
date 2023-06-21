@@ -2,7 +2,6 @@ import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import HomeSideBar from "./../components/ui/sidebar/HomeSideBar"
-import { X } from 'react-feather';
 
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
@@ -41,7 +40,7 @@ export const action = async ({ request }: ActionArgs) => {
     );
   }
 
-  if(formData?.get('password').length < 8) {
+  if(formData.get('password')?.length < 8) {
     return json(
       { errors: { email: null, password: "Password is too short" } },
       { status: 400 }

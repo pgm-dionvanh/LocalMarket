@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.lc__remix-pagination__container {
+    .lc__remix-pagination__list {
+      display: flex;
+      align-items: center;
+    }
+    .lc__remix-pagination__icon {
+      margin-right: 10px;
+      margin-left: 10px;
+    }
+    .lc__remix-pagination__link--disabled
+      > .plc__remix-pagination__icon {
+      fill: #bfbfbf;
+    }
+    .lc__remix-pagination__link {
+      margin-right: 4px;
+      margin-left: 4px;
+      padding-left: 12px;
+      padding-right: 12px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+    .lc__remix-pagination__link--current {
+      background-color: #ffdcdc;
+      color: #d50e0e;
+      border-radius: 5px;
+    }
+  }
