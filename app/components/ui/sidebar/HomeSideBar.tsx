@@ -57,13 +57,11 @@ export default function SideBarHome() {
 										</Dropdown.Item>
 										<Dropdown.Divider/>
 
-										<Dropdown.Item>
-											<form action="/logout" method="post">
-												<button type="submit" className="button text-red-500">
+										<form action="/logout" method="post" className="py-2 px-5 flex justify-start items-center w-full">
+											<button type="submit" className="button text-red-500">
 												Logout
-												</button>
-											</form>
-										</Dropdown.Item>
+											</button>
+										</form>
 							
 									</> 
 								: 

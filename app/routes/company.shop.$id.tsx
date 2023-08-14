@@ -76,7 +76,7 @@ export default function Index() {
                                             </div>
                                             <div className="mb-4 pt-0 flex flex-col">
                                                 <label className="mb-2 text-gray-800 text-lg font-light" htmlFor="description">Product price</label>
-                                                <input type="number" id="price" name="price" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
+                                                <input type="number" id="price" min="1" step="any" name="price" className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
                                             </div>
                                             <input type="hidden" id="shopid" name="shopid" value={shop.id} className="border-2 rounded h-10 px-6 text-lg text-gray-600 focus:outline-none focus:ring focus:border-blue-300" autoComplete="off" />
 

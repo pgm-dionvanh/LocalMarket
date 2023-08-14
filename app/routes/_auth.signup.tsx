@@ -1,60 +1,42 @@
 import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { Link, useActionData, useSearchParams } from "@remix-run/react";
 import HomeSideBar from "./../components/ui/sidebar/HomeSideBar"
-
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
-import { safeRedirect, validateEmail } from "~/utils";
-import axios from "axios";
+import { safeRedirect } from "~/utils";
+import {
+  ValidatedForm,
+  validationError,
+} from "remix-validated-form";
+import { SignUpValidator } from "~/validators/signUpValidator";
+import { FormTextInput } from "~/components/ui/form/inputWithError";
+
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
   return json({});
 };
 
+
+
 export const action = async ({ request }: ActionArgs) => {
-  const formData = await request.formData();
-  const resp = await axios.get(`https://controleerbtwnummer.eu/api/validate/${formData.get('vat')}.json`)
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/company/dashboard");
+  const data = await SignUpValidator.validate(
+    await request.formData()
+  ); /* Validate the form data against the validator */	
+
+  if (data.error) return validationError(data.error); /* Run this before axios request, no point in wasting a request if the form is invalid */
+
+  /* else destruct data */
+  const { firstName, lastName, email, vat, password, redirectTo } = data.data;
+
+  
+  const redirectPlace = safeRedirect(redirectTo, "/company/dashboard");
   
 
-  if (!validateEmail(formData.get('email'))) {
-    return json(
-      { errors: { email: "Email is invalid", vat: null, password: null } },
-      { status: 400 }
-    );
-  }
 
-  if(resp.data.valid === false){
-    return json(
-      { errors: { vat: "Vat number is incorrect", email: null, password: null } },
-      { status: 400 }
-    );
-  }
 
-  if (typeof formData.get('password') !== "string" || formData.get('password')?.length === 0) {
-    return json(
-      { errors: { email: null, password: "Password is required" } },
-      { status: 400 }
-    );
-  }
-
-  if(formData.get('password')?.length < 8) {
-    return json(
-      { errors: { email: null, password: "Password is too short" } },
-      { status: 400 }
-    );
-  }
-
-  if(formData.get('password') !== formData.get('repeatPassword')){
-    return json(
-      { errors: { email: null, password: "Passwords do not match" } },
-      { status: 400 }
-    );
-  }
-
-  const existingUser = await getUserByEmail(formData.get('email'));
+  const existingUser = await getUserByEmail(email);
   if (existingUser) {
     return json(
       {
@@ -67,11 +49,10 @@ export const action = async ({ request }: ActionArgs) => {
     );
   }
 
-  const user = await createUser(formData.get('email'), formData.get('password'), formData.get('vat'), formData.get('firstName'), formData.get('lastName'));
-
+  const user = await createUser(email, password, vat, firstName, lastName);
 
   return createUserSession({
-    redirectTo,
+    redirectPlace,
     remember: false,
     request,
     userId: user.id,
@@ -82,7 +63,9 @@ export const meta: V2_MetaFunction = () => [{ title: "Sign Up" }];
 
 export default function SignUpPage() {
     const [searchParams] = useSearchParams();
-    const formErrors = useActionData();
+    const data = useActionData();
+
+    console.log(data)
 
     return (
     <>
@@ -108,143 +91,53 @@ export default function SignUpPage() {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                <Form className="space-y-6" method="post">
+              <ValidatedForm validator={SignUpValidator} className="space-y-6" method="post">
                 <input
                     type="hidden"
                     name="redirectTo"
-                    value={searchParams.get('redirectTo') ?? undefined}
+                    value={searchParams.get('redirectTo') ?? "/company/dashboard"}
                 />
-                <div>
-                    <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700"
-                    >
-                    Email address
-                    </label>
-                    <div className="mt-1">
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    />
-                    {formErrors?.errors?.email && (
-                        <div className="text-xs text-red-700">
-                        {formErrors.errors?.email}
-                        </div>
-                    )}
-                    </div>
-                </div>
+                <FormTextInput
+                  type="email"
+                  label="Email"
+                  name="email"
+                  placeholder="yourname@email.com"
+                />
 
-                <div>
-                    <label
-                    htmlFor="firstName"
-                    className="block text-sm font-medium text-gray-700"
-                    >
-                    First name
-                    </label>
-                    <div className="mt-1">
-                    <input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        required
-                        autoComplete="given-name"
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    />
-                    </div>
-                </div>
+                <FormTextInput
+                  type="text"
+                  label="First name"
+                  name="firstName"
+                  placeholder="John"
+                />
 
-                <div>
-                    <label
-                    htmlFor="lastName"
-                    className="block text-sm font-medium text-gray-700"
-                    >
-                    Last name
-                    </label>
-                    <div className="mt-1">
-                    <input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        autoComplete="family-name"
-                        required
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    />
-                    </div>
-                </div>
+                <FormTextInput
+                  type="text"
+                  label="Last name"
+                  name="lastName"
+                  placeholder="Doe"
+                />
+                
+                <FormTextInput
+                  type="password"
+                  label="Password"
+                  name="password"
+                  placeholder="********"
+                />
 
-                <div>
-                    <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-gray-700"
-                    >
-                    Password
-                    </label>
-                    <div className="mt-1">
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        autoComplete="current-password"
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    />
-                    {formErrors?.errors?.password && (
-                        <div className="text-xs text-red-700">
-                        {formErrors.errors.password}
-                        </div>
-                    )}
-                    </div>
-                </div>
-                <div>
-                    <label
-                    htmlFor="repeatPassword"
-                    className="block text-sm font-medium text-gray-700"
-                    >
-                    Repeat Password
-                    </label>
-                    <div className="mt-1">
-                    <input
-                        id="repeatPassword"
-                        name="repeatPassword"
-                        type="password"
-                        autoComplete="current-password"
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    />
-                    {formErrors?.errors?.repeatPassword && (
-                        <div className="text-xs text-red-700">
-                        {formErrors.repeatPassword}
-                        </div>
-                    )}
-                    </div>
-                </div>
-                <div>
-                    <label
-                    htmlFor="vat"
-                    className="block text-sm font-medium text-gray-700"
-                    >
-                      Vat number
-                    </label>
-                    <div className="mt-1">
-                    <input
-                        id="vat"
-                        name="vat"
-                        type="text"
-                        placeholder="BE0123456789"
-                        autoComplete="current-password"
-                        minLength={12}
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    />
-                    {formErrors?.errors.vat && (
-                        <div className="text-xs text-red-700">
-                        {formErrors.errors.vat}
-                        </div>
-                    )}
-                    </div>
-                </div>
-
-
+                <FormTextInput
+                  type="password"
+                  label="Repeat Password"
+                  name="repeatPassword"
+                  placeholder="********"
+                />
+                
+                <FormTextInput
+                  type="text"
+                  label="Vat Number"
+                  name="vat"
+                  placeholder="BE123456789"
+                />
                 <div>
                     <button
                     type="submit"
@@ -253,7 +146,7 @@ export default function SignUpPage() {
                     Sign up
                     </button>
                 </div>
-                </Form>
+              </ValidatedForm>
             </div>
             </div>
         </div>

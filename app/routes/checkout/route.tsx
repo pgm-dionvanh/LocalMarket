@@ -2,12 +2,25 @@ import type { ActionFunction, V2_MetaFunction } from "@remix-run/node";
 import HomeSideBar from "./../../components/ui/sidebar/HomeSideBar"
 import { redirect } from "@remix-run/node";
 import axios from "axios"
-import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 import { useCart } from "react-use-cart";
+import {
+  ValidatedForm,
+  validationError,
+} from "remix-validated-form";
+import { CheckOutValidator } from "~/validators/checkOutValidator";
+import { FormTextInput } from "~/components/ui/form/inputWithError";
 
 export const meta: V2_MetaFunction = () => [{ title: "Local Market ~ Home" }];
 
 export const action: ActionFunction = async ({ request }) => {
+    const data = await CheckOutValidator.validate(
+      await request.formData()
+    ); /* Validate the form data against the validator */	
+
+    if (data.error) return validationError(data.error); /* Run this before axios request, no point in wasting a request if the form is invalid */
+
+
     const resp = await axios.post('https://api.mollie.com/v2/payments', { 
         "description": "LC Cart", 
         "redirectUrl": "https://localmarketpgm.netlify.app/paymentStatus?orderId=1234",
@@ -29,10 +42,7 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export default function Index() {
-    const resp = useLoaderData();
     const {
-        isEmpty,
-        totalUniqueItems,
         totalItems,
         cartTotal,
         items,
@@ -50,66 +60,36 @@ export default function Index() {
                         Contact information
                         </h2>
                 </div>
+                <ValidatedForm validator={CheckOutValidator} method="post">
                 <div className="mt-10 border-t border-gray-200 pt-10">
                     <input type="hidden" name="action" value="setOrderCustomer" />
                     <div className="mt-4">
-                    <label
-                        htmlFor="emailAddress"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Email address
-                    </label>
-                    <div className="mt-1">
-                        <input
-                        type="email"
-                        id="emailAddress"
-                        name="emailAddress"
-                        autoComplete="email"
-                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                        />
-                    </div>
-
+                      <FormTextInput
+                            type="email"
+                            label="Email"
+                            name="email"
+                            placeholder="yourname@email.com"
+                      />
                     </div>
                     <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
                     <div>
-                        <label
-                        htmlFor="firstName"
-                        className="block text-sm font-medium text-gray-700"
-                        >
-                        First name
-                        </label>
-                        <div className="mt-1">
-                        <input
+                      <FormTextInput
                             type="text"
-                            id="firstName"
+                            label="First Name"
                             name="firstName"
-                            autoComplete="given-name"
-                            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                        />
-                        </div>
+                            placeholder="John"
+                      />
                     </div>
 
-                    <div>
-                        <label
-                        htmlFor="lastName"
-                        className="block text-sm font-medium text-gray-700"
-                        >
-                        Last name
-                        </label>
-                        <div className="mt-1">
-                        <input
-                            type="text"
-                            id="lastName"
-                            name="lastName"
-                            autoComplete="family-name"
-                            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      <FormTextInput
+                              type="text"
+                              label="Last Name"
+                              name="lastName"
+                              placeholder="Doe"
                         />
-                        </div>
-                    </div>
                     </div>
                 </div>
 
-                <Form method="post">
                     <input type="hidden" name="action" value="setCheckoutShipping" />
                     <div className="mt-10 border-t border-gray-200 pt-10">
                     <h2 className="text-lg font-medium text-gray-900">
@@ -118,58 +98,30 @@ export default function Index() {
                     </div>
                     <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
                     <div>
-                        <label
-                        htmlFor="firstName"
-                        className="block text-sm font-medium text-gray-700"
-                        >
-                        Street name
-                        </label>
-                        <div className="mt-1">
-                        <input
+                    <FormTextInput
                             type="text"
-                            id="firstName"
-                            name="firstName"
-                            autoComplete="given-name"
-                            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                        />
-                        </div>
+                            label="Street Name"
+                            name="streetName"
+                            placeholder="overpoortstraat"
+                      />
                     </div>
 
                     <div>
-                        <label
-                        htmlFor="lastName"
-                        className="block text-sm font-medium text-gray-700"
-                        >
-                        House number
-                        </label>
-                        <div className="mt-1">
-                        <input
+                    <FormTextInput
                             type="text"
-                            id="lastName"
-                            name="lastName"
-                            autoComplete="family-name"
-                            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                        />
-                        </div>
+                            label="House Number"
+                            name="houseNumber"
+                            placeholder="12"
+                      />
                     </div>
                     </div>
                     <div className="mt-4">
-                    <label
-                        htmlFor="emailAddress"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Postcode
-                    </label>
-                    <div className="mt-1">
-                        <input
-                        type="email"
-                        id="emailAddress"
-                        name="emailAddress"
-                        autoComplete="email"
-                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                        />
-                    </div>
-
+                    <FormTextInput
+                            type="text"
+                            label="Postcode"
+                            name="postCode"
+                            placeholder="9000"
+                      />
                     </div>
                     <button
                     type="submit"
@@ -177,7 +129,7 @@ export default function Index() {
                 >
                     <span>Proceed to payment</span>
                 </button>
-                </Form>            
+                </ValidatedForm>            
 
             </div>
             <div className="mt-10 lg:mt-0">

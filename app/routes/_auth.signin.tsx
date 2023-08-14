@@ -1,12 +1,17 @@
-import type { V2_MetaFunction, LoaderArgs } from "@remix-run/node";
+import type { V2_MetaFunction, LoaderArgs, ActionArgs } from "@remix-run/node";
 import HomeSideBar from "./../components/ui/sidebar/HomeSideBar"
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import { useEffect, useRef } from "react";
-import { safeRedirect, validateEmail } from "~/utils";
+import { Link, useSearchParams } from "@remix-run/react";
+import { safeRedirect } from "~/utils";
 import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
-import { X } from 'react-feather';
+import {
+  ValidatedForm,
+  validationError,
+} from "remix-validated-form";
+import { FormTextInput } from "~/components/ui/form/inputWithError";
+
+import { SignInValidator } from "~/validators/signInValidator";
 
 
 export const meta: V2_MetaFunction = () => [{ title: "Local Market ~ Login" }];
@@ -18,44 +23,29 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-    const formData = await request.formData();
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
-    const remember = formData.get("remember");
+  const data = await SignInValidator.validate(
+    await request.formData()
+  ); /* Validate the form data against the validator */	
+
+  if (data.error) return validationError(data.error); /* Run this before axios request, no point in wasting a request if the form is invalid */
+
+    /* else destruct data */
+  const { email, password, redirectTo } = data.data;
   
-    if (!validateEmail(email)) {
-      return json(
-        { errors: { email: "Email is invalid", password: null } },
-        { status: 400 }
-      );
-    }
+  const user = await verifyLogin(email, password);
   
-    if (typeof password !== "string" || password.length === 0) {
-      return json(
-        { errors: { email: null, password: "Password is required" } },
-        { status: 400 }
-      );
-    }
-  
-    if (password.length < 8) {
-      return json(
-        { errors: { email: null, password: "Password is too short" } },
-        { status: 400 }
-      );
-    }
-  
-    const user = await verifyLogin(email, password);
-  
-    if (!user) {
+  const redirectPlace = safeRedirect(redirectTo, "/company/dashboard");
+
+
+  if (!user) {
       return json(
         { errors: { email: "Invalid email or password", password: null } },
         { status: 400 }
       );
-    }
+  }
   
-    return createUserSession({
-      redirectTo,
+  return createUserSession({
+      redirectPlace,
       remember: false,
       request,
       userId: user.id,
@@ -65,18 +55,6 @@ export const action = async ({ request }: ActionArgs) => {
 
 export default function LoginPage() {
     const [searchParams] = useSearchParams();
-    const redirectTo = searchParams.get("redirectTo") || "/";
-    const actionData = useActionData<typeof action>();
-    const emailRef = useRef<HTMLInputElement>(null);
-    const passwordRef = useRef<HTMLInputElement>(null);
-  
-    useEffect(() => {
-      if (actionData?.errors?.email) {
-        emailRef.current?.focus();
-      } else if (actionData?.errors?.password) {
-        passwordRef.current?.focus();
-      }
-    }, [actionData]);
 
     return (
         <>
@@ -101,64 +79,26 @@ export default function LoginPage() {
 
                   <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                     <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                      <Form method="post">
+                      <ValidatedForm validator={SignInValidator} method="post">
                         <input
                           type="hidden"
                           name="redirectTo"
                           value={searchParams.get('redirectTo') ?? undefined}
                         />
-                        <div>
 
-                          {actionData?.errors.email && (
-                              <div className="flex">
-                                <div className="flex-shrink-0">
-                                  <X className="h-5 w-5 text-red-400" aria-hidden="true" />
-                                </div>
-                                <div className="ml-3">
-                                  <h3 className="text-sm font-medium text-red-800">
-                                    {actionData.errors.email}
-                                  </h3>
-                                </div>
-                              </div>
-                          )}
-                          <label
-                            htmlFor="email"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Email address
-                          </label>
-                          <div className="mt-1">
-                            <input
-                              id="email"
-                              name="email"
-                              type="email"
-                              autoComplete="email"
-                              required
-                              placeholder="Email address"
-                              className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm disabled:text-gray-400 disabled:bg-gray-200 disabled:cursor-not-allowed"
-                            />
-                          </div>
-                        </div>
+                        <FormTextInput
+                          type="email"
+                          label="Email"
+                          name="email"
+                          placeholder="yourname@email.com"
+                        />
 
-                        <div className="mt-4">
-                          <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Password
-                          </label>
-                          <div className="mt-1">
-                            <input
-                              id="password"
-                              name="password"
-                              type="password"
-                              autoComplete="current-password"
-                              required
-                              placeholder="Password"
-                              className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm disabled:text-gray-400 disabled:bg-gray-200 disabled:cursor-not-allowed"
-                            />
-                          </div>
-                        </div>
+                      <FormTextInput
+                          type="password"
+                          label="Password"
+                          name="password"
+                          placeholder="********"
+                        />
 
                         <div className="mt-4 flex items-center justify-between">
                           <div className="flex items-center">
@@ -192,7 +132,7 @@ export default function LoginPage() {
                             Login
                           </button>
                         </div>
-                        </Form>
+                        </ValidatedForm>
                       </div>
                     </div>
                   </div>

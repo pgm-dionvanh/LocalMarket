@@ -79,7 +79,7 @@ export function CartTray({
                     </div>
 
                     <div className="mt-8">
-                        <div className="flex items-center justify-center h-48 text-xl text-gray-400">
+                        <div className="flex flex-col gap-4 mb-4 items-center justify-center h-48 text-xl text-gray-400">
                         { items.map((item) => (
                             <ul key={item.id} role="list" className="-my-6 divide-y divide-gray-200">
                                 <li  className="py-6 flex">
